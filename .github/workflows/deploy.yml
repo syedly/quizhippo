@@ -1,0 +1,23 @@
+name: Deploy to PythonAnywhere
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to PythonAnywhere
+        uses: schubergphilis/pythonanywhere-deploy-action@v1
+        with:
+          api-token: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          username: "quizhippo"  # your PythonAnywhere username
+          domain: "quizhippo.pythonanywhere.com"
+          path: "/home/quizhippo/quizhippo"
+          virtualenv: "/home/quizhippo/quizhippo/venv"
