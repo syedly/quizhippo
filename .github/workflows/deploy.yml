@@ -1,23 +1,40 @@
-name: Deploy to PythonAnywhere
+name: Deploy Django App to PythonAnywhere
 
 on:
   push:
     branches:
-      - main
+      - main   # Change if you deploy from another branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout latest code
+        uses: actions/checkout@v4
 
-      - name: Deploy to PythonAnywhere
-        uses: schubergphilis/pythonanywhere-deploy-action@v1
-        with:
-          api-token: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
-          username: "quizhippo"  # your PythonAnywhere username
-          domain: "quizhippo.pythonanywhere.com"
-          path: "/home/quizhippo/quizhippo"
-          virtualenv: "/home/quizhippo/quizhippo/venv"
+      - name: Zip project files
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zip curl
+          zip -r quizhippo.zip . -x "*.git*" "__pycache__/*" "*.venv*" "venv/*"
+
+      - name: Upload to PythonAnywhere
+        env:
+          USERNAME: "quizhippo"  # your PythonAnywhere username
+          TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          echo "Uploading new version to PythonAnywhere..."
+          curl -X POST https://www.pythonanywhere.com/api/v0/user/${USERNAME}/files/path/home/${USERNAME}/quizhippo/ \
+            -H "Authorization: Token ${TOKEN}" \
+            -F "files=@quizhippo.zip"
+
+      - name: Reload PythonAnywhere web app
+        env:
+          USERNAME: "quizhippo"
+          TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          echo "Reloading web app on PythonAnywhere..."
+          curl -X POST https://www.pythonanywhere.com/api/v0/user/${USERNAME}/webapps/${USERNAME}.pythonanywhere.com/reload/ \
+            -H "Authorization: Token ${TOKEN}"
+          echo "✅ Deployment finished!"
