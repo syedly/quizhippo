@@ -1131,3 +1131,22 @@ class QuizSubmitView(APIView):
 
         status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK  # 201 for new, 200 for update
         return Response(result_summary, status=status_code)
+    
+class TestingView(APIView):
+
+    def get(self, request):
+        try:
+            response_data = {
+                "status": "success",
+                "message": "API is working correctly!"
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            error_data = {
+                "status": "error",
+                "message": str(e)
+            }
+            return Response(
+                error_data,
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

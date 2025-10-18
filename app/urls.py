@@ -13,7 +13,7 @@ from .views import (
     ServerDetailAPIView, AddQuizToServerAPIView,
     ServerListAPIView, DeleteServerAPIView,
     QuizDetailAPIView, ResultView,
-    QuizSubmitView
+    QuizSubmitView, TestingView
     )
 
 urlpatterns = [
@@ -46,4 +46,5 @@ urlpatterns = [
     path("quiz/<int:quiz_id>/result/", ResultView.as_view(), name="quiz_result"),
     path('quiz/<int:quiz_id>/submit/', QuizSubmitView.as_view(), name='quiz_submit'),
     path('retake-quiz/<int:quiz_id>/submit/', QuizSubmitView.as_view(), name='retake_quiz_submit'),
+    path('testing/', TestingView.as_view(), name='testing-view'),
 ]
